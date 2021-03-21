@@ -1,0 +1,76 @@
+---
+- hosts: 192.168.1.58
+  vars:
+          master_ip: '0.0.0.0'
+  tasks:
+          - name: "copying Jdk files"
+            copy:
+                   dest: "/root"
+                   src: "/root/jdk-8u281-linux-x64.rpm"
+          - name: "copying Hadoop software"
+            copy:
+                    dest: "/root"
+                    src: "/root/hadoop-1.2.1-1.x86_64.rpm"
+          - name: "Installing JDk software"
+            command:
+                    cmd: "rpm -ivh /root/jdk-8u281-linux-x64.rpm --force"
+          - name: "Installing Hadoop software"
+            command:
+                    cmd: "rpm -ivh /root/hadoop-1.2.1-1.x86_64.rpm --force"
+          - name: "Creating directory"
+            file:
+                    path: "/Master"
+                    state: directory
+          - name: "configuring hdfs-site.xml"
+            copy:
+                    dest: "/etc/hadoop/hdfs-site.xml"
+                    content: >
+                            <?xml version="1.0"?>
+                            <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+                            <!-- Put site-specific property overrides in this file. -->
+
+                            <configuration>
+                            <property>
+                            <name>dfs.name.dir</name>
+                            <value>/Master</value>
+                            </property>
+                            </configuration>
+          - name: "configuring core-site.xml"
+            copy:
+                    dest: "/etc/hadoop/core-site.xml"
+                    content: >
+                            <?xml version="1.0"?>
+                            <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+                            <!-- Put site-specific property overrides in this file. -->
+
+                            <configuration>
+                            <property>
+                            <name>fs.default.name</name>
+                            <value>hdfs://{{master_ip}}:9001</value>
+                            </property>
+                            </configuration>
+          - name: "formatting Masternode"
+            command:
+                    cmd: "hadoop namenode -format"
+                    warn: no
+            when: ansible_facts['default_ipv4']['address'] == master_ip
+          - name: "stopiing firewall"
+            command:
+                    cmd:  "systemctl stop firewalld"
+          - name: "starting namenode"
+            command:
+                    cmd: "hadoop-daemon.sh start namenode"
+
+
+
+
+
+                            
+
+
+
+
+
+
