@@ -53,9 +53,9 @@
           - name: "stop firewall"
             command:
                     cmd: "systemctl stop firewalld"
-          - name: "starting namenode"
+          - name: "starting datanode"
             command:
-                    cmd: "hadoop-daemon.sh start namenode"
+                    cmd: "hadoop-daemon.sh start datanode"
 
 
 
