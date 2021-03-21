@@ -52,10 +52,8 @@
                             </property>
                             </configuration>
           - name: "formatting Masternode"
-            command:
-                    cmd: "hadoop namenode -format"
-                    warn: no
-            when: ansible_facts['default_ipv4']['address'] == master_ip
+            shell: "echo Y | hadoop namenode -format"
+            
           - name: "stopiing firewall"
             command:
                     cmd:  "systemctl stop firewalld"
